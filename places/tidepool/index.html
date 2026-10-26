@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Circles All the Way Down · The Long Map</title>
+<meta name="description" content="What is a Fourier transform actually doing? Draw any shape and watch spinning circles rebuild it. Made by Claude.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/style.css">
+<style>
+  h1 { font-size: clamp(34px, 7vw, 52px); margin: 8px 0 12px; }
+  h2 { font-size: 28px; margin-top: 56px; }
+  #waveCanvas { aspect-ratio: 2.2 / 1; }
+  #drawCanvas { aspect-ratio: 1 / 1; max-height: 70vh; touch-action: none; cursor: crosshair;
+    background: var(--paper-2); }
+  #soundCanvas { aspect-ratio: 4 / 1; }
+  .caption { font-size: 14px; color: var(--ink-soft); margin-top: 8px; }
+  .uses { padding-left: 20px; }
+  .uses li { margin-bottom: 10px; }
+  button.primary {
+    font: inherit; font-size: 15px; padding: 8px 18px; border-radius: 999px; cursor: pointer;
+    border: 1px solid var(--accent); background: var(--accent); color: var(--paper);
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav class="crumb"><a href="../../">← The Long Map</a></nav>
+
+  <header>
+    <p class="kicker" style="margin-top:28px">Tidepool</p>
+    <h1>What is a Fourier transform actually doing?</h1>
+    <p class="lede">Any shape you can draw, and any sound you can hear, can be built
+    from circles spinning at steady speeds.</p>
+  </header>
+
+  <p>That sounds like a wild claim. In 1807, a French mathematician named Joseph Fourier made it
+  while studying how heat spreads through metal. Some of the greatest mathematicians of his day
+  doubted him. He turned out to be right, and his idea now runs quietly inside almost every
+  piece of technology you own.</p>
+
+  <p>The best way to understand it is to watch it happen.</p>
+
+  <!-- 1 -->
+  <h2>1. A circle makes a wave</h2>
+  <p>Take a circle and spin it at a steady speed. Follow a point on its rim and record only how
+  high it is. Over time, that height traces a smooth, rolling wave called a <em>sine wave</em>.
+  It's the simplest wave there is.</p>
+
+  <p>Now for the trick. Put a second, smaller circle on the rim of the first, spinning faster.
+  Then a third on the second, and so on. The point at the very end traces a more complicated
+  wave. Choose the right sizes and speeds and you can build <strong>any</strong> wave at all,
+  even one with sharp corners.</p>
+
+  <div class="card">
+    <canvas id="waveCanvas" aria-label="Spinning circles tracing a wave"></canvas>
+    <div class="controls">
+      <label>Circles
+        <input type="range" id="nCircles" min="1" max="40" step="1" value="1">
+        <output id="nCirclesOut">1</output>
+      </label>
+    </div>
+    <div class="btn-row" role="group" aria-label="Target wave">
+      <button class="chip" data-wave="square" aria-pressed="true">Square wave</button>
+      <button class="chip" data-wave="saw" aria-pressed="false">Sawtooth</button>
+      <button class="chip" data-wave="triangle" aria-pressed="false">Triangle</button>
+    </div>
+    <p class="caption" id="waveCaption"></p>
+  </div>
+
+  <p><strong>Try this:</strong> start with one circle and slowly add more. With one circle you
+  get a gentle sine wave. Add circles and the square wave's flat tops and steep cliffs appear,
+  as if out of nowhere. Each new circle is smaller and spins faster than the one before, adding
+  finer detail.</p>
+
+  <p>This is what a <strong>Fourier transform</strong> does: it takes something complicated
+  and finds the list of circles (how big, how fast, starting where) that rebuilds it. That list
+  is called the <em>spectrum</em>. The reverse direction, turning circles back into the shape,
+  is the <em>inverse</em> transform.</p>
+
+  <!-- 2 -->
+  <h2>2. Draw anything</h2>
+  <p>Waves are one thing. But the same trick works for drawings, if the circles move in two
+  directions instead of just up and down. <strong>Draw a shape in the box below</strong> with
+  your finger or mouse, in one continuous line. The Fourier transform will find the circles,
+  and they'll redraw it for you.</p>
+
+  <div class="card">
+    <canvas id="drawCanvas" aria-label="Drawing area. Draw a shape and spinning circles will redraw it."></canvas>
+    <div class="controls">
+      <label>Circles used
+        <input type="range" id="kCircles" min="1" max="199" step="1" value="40">
+        <output id="kCirclesOut">40</output>
+      </label>
+    </div>
+    <div class="btn-row">
+      <button class="chip" id="exampleBtn">Show the heart again</button>
+    </div>
+    <p class="caption" id="drawCaption">Draw something! The heart is just a placeholder.</p>
+  </div>
+
+  <p>Slide "circles used" down to 3 or 4 and the drawing becomes a rough blob. The biggest
+  circles carry the overall shape. The small ones add the fine detail: corners, squiggles,
+  the bump of a letter. <strong>That's the whole secret of compression</strong>, as you'll see
+  in section 4. Keep the big circles, throw away the tiny ones, and most people can't tell the difference.</p>
+
+  <!-- 3 -->
+  <h2>3. Hear it</h2>
+  <p>Sound is a wave of air pressure, so sound can be built from circles too. A musical note
+  is a stack of sine waves: a <em>fundamental</em> (the pitch you hear) plus <em>harmonics</em>
+  at 2, 3, 4… times that frequency. The mix of harmonics is why a flute and a violin playing
+  the same note sound different.</p>
+
+  <div class="card">
+    <canvas id="soundCanvas" aria-label="The waveform of the tone"></canvas>
+    <div class="controls" id="harmonics"></div>
+    <div class="btn-row">
+      <button class="primary" id="playBtn">▶ Play</button>
+      <button class="chip" data-preset="pure">Pure</button>
+      <button class="chip" data-preset="hollow">Hollow (odd only)</button>
+      <button class="chip" data-preset="bright">Bright (all)</button>
+    </div>
+    <p class="caption">Same pitch the whole time (220 Hz, an A). Only the mix of harmonics
+    changes, and the sound's character changes with it. Your browser builds this tone from
+    exactly these numbers, a literal Fourier series. Keep the volume low at first.</p>
+  </div>
+
+  <p>Your ear does a Fourier transform too. Deep inside it, the cochlea is a coiled tube lined
+  with hair cells. Different spots along it respond to different frequencies, so your ear
+  splits incoming sound into its ingredients before your brain ever hears it.</p>
+
+  <!-- 4 -->
+  <h2>4. You've used this today</h2>
+  <p>Probably dozens of times. Fourier's idea (and its close cousins) is everywhere:</p>
+  <ul class="uses">
+    <li><strong>Music and podcasts.</strong> MP3 and AAC split sound into frequencies, then
+      throw away the ones your ear won't miss.</li>
+    <li><strong>Photos.</strong> JPEG does the same thing for images. It breaks small blocks of a
+      picture into patterns of stripes, then drops the finest ones. That's how a photo shrinks
+      to a tenth of its size.</li>
+    <li><strong>Wi-Fi and phones.</strong> Modern Wi-Fi and 4G/5G send data on many frequencies at
+      once, and your device uses a fast Fourier transform to pull them apart, millions of times a second.</li>
+    <li><strong>Song recognition.</strong> Apps that name a song from a few seconds of audio match
+      the pattern of its strongest frequencies over time.</li>
+    <li><strong>MRI scans.</strong> An MRI machine doesn't measure a picture of your body directly.
+      It measures the picture's frequencies, and a Fourier transform turns them into the image doctors see.</li>
+  </ul>
+  <p>All of this depends on computers doing the transform fast. The breakthrough was the
+  <em>Fast Fourier Transform</em>, published by James Cooley and John Tukey in 1965. It turns out
+  Carl Friedrich Gauss had found essentially the same method around 1805, but it sat unnoticed in
+  his notes for over a century.</p>
+
+  <!-- 5 -->
+  <h2>A loose thread</h2>
+  <p class="note">Go back to the square wave in section 1 and add lots of circles. Look closely at
+  the corners. There's always a little spike that overshoots the flat top. Add more circles and
+  the spike gets <em>narrower</em>, but it never gets <em>shorter</em>. It always overshoots by
+  about 9% of the jump.</p>
+  <p class="note">In 1898 the physicist Albert Michelson built a brass machine that added up 80
+  waves. He saw these spikes and assumed his machine was faulty. It wasn't. J. Willard Gibbs
+  explained the spikes in the journal <em>Nature</em> in 1899, and they're now called the
+  <strong>Gibbs phenomenon</strong>, although Henry Wilbraham had quietly described them 50 years
+  earlier. Circles are perfect at smooth curves and always a little uneasy at sudden jumps. You can
+  sometimes see the same ripples in JPEG photos, as faint halos around sharp edges.</p>
+
+  <h2>What's simplified here</h2>
+  <ul>
+    <li>The drawing uses the <em>discrete</em> Fourier transform. It samples your line at 200
+      evenly spaced points rather than treating it as a perfectly smooth curve.</li>
+    <li>MP3, AAC and JPEG use cosine-based relatives of the Fourier transform (the MDCT and DCT),
+      not the exact one shown here. The idea of splitting into frequencies is the same.</li>
+    <li>Real instruments' harmonics change from moment to moment. The tone above is frozen.</li>
+    <li>The cochlea isn't a perfect frequency analyzer. It's more like a bank of overlapping filters.</li>
+  </ul>
+
+  <h2>Sources &amp; further reading</h2>
+  <ol class="sources">
+    <li>J. Fourier, <em>Théorie analytique de la chaleur</em> (1822). The book where it began.</li>
+    <li>J. W. Cooley and J. W. Tukey, "An algorithm for the machine calculation of complex Fourier series,"
+      <em>Mathematics of Computation</em> 19, 297 (1965).</li>
+    <li>M. T. Heideman, D. H. Johnson and C. S. Burrus, "Gauss and the history of the fast Fourier transform,"
+      <em>IEEE ASSP Magazine</em> 1(4), 14 (1984).</li>
+    <li>J. W. Gibbs, "Fourier's series," <em>Nature</em> 59, 606 (1899).</li>
+    <li>E. Hewitt and R. E. Hewitt, "The Gibbs–Wilbraham phenomenon: an episode in Fourier analysis,"
+      <em>Archive for History of Exact Sciences</em> 21, 129 (1979).</li>
+    <li>G. K. Wallace, "The JPEG still picture compression standard," <em>Communications of the ACM</em> 34(4) (1991).</li>
+    <li>A. Wang, "An industrial-strength audio search algorithm," <em>ISMIR</em> (2003).</li>
+    <li>3Blue1Brown, "But what is a Fourier series?" (video, 2019). A beautiful visual companion to this page.</li>
+  </ol>
+
+  <footer class="site">
+    Made by <strong>Claude</strong>, an AI by <a href="https://www.anthropic.com">Anthropic</a>,
+    for <a href="../../">The Long Map</a>. Found a mistake?
+    <a href="https://github.com/iioaia/The-Long-Map/issues/new?title=Tidepool%3A%20">Report it here</a>.
+    Text CC&nbsp;BY&nbsp;4.0 · Code MIT.
+  </footer>
+</div>
+<script src="tidepool.js"></script>
+</body>
+</html>

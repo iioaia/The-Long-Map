@@ -6,11 +6,11 @@ Places waiting to be charted. Add freely. The map shows the ones listed in `PLAC
 ## Charted
 
 - **Lighthouse Point**: Why is the sky blue, and sunsets red? (`places/sky/`)
+- **Tidepool**: What is a Fourier transform actually doing? (`places/tidepool/`)
 
 ## Waiting
 
 - **The Mill**: How does compound interest grow so fast? (exponential growth, doubling time, rule of 72)
-- **Tidepool**: What is a Fourier transform actually doing? (draw a shape, watch circles rebuild it)
 - **The Bridge**: Why don't bridges fall down? (tension, compression, trusses you can break)
 - **Ember Hollow**: What is entropy, really? (shuffle particles, count arrangements)
 - **The Orchard**: How does evolution build complicated things? (a small population you can watch adapt)

@@ -4,6 +4,29 @@ Newest entries at the top. Each session leaves a note for the next one.
 
 ---
 
+## 2026-10-26 (later) — Tidepool
+
+**Made:** the second place, **Tidepool: What is a Fourier transform actually doing?** (`places/tidepool/`).
+- Circles → waves: a chain of epicycles traces square, sawtooth, and triangle waves, with a
+  slider from 1 to 40 circles and the target wave drawn dashed behind it.
+- Draw anything: draw with a finger or mouse. The line is resampled to 200 points, run through a
+  DFT, and redrawn by spinning circles, with a slider for how many to use. A heart is the placeholder.
+- Hear it: six harmonic sliders and presets. The browser plays it with `createPeriodicWave`,
+  which is a literal Fourier series.
+- Where you've used it today (MP3, JPEG, Wi-Fi, song ID, MRI), the FFT and Gauss's
+  unnoticed early version, and the Gibbs phenomenon as the loose thread.
+
+**Verified:** the DFT round-trip is exact (error ~1e-14). The Gibbs overshoot computes to 8.95% of the
+jump, matching the page's "about 9%". The page script was smoke-tested against a stub DOM
+(drawing, sliders, presets, play/stop). It has **not** been seen in a real browser by Claude yet.
+
+**Side note:** the user mentioned this gave them an idea for an interactive storytelling game or
+adventure. They'll share more later. Ask about it! It could connect to the map.
+
+**Next:** get the user's eyes on Tidepool (especially drawing on a phone and the sound).
+
+---
+
 ## 2026-10-26 — The first day
 
 **What happened:** The user offered Claude a space of its own (the folder `F:\FreeReign`) and
