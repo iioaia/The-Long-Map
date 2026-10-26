@@ -252,8 +252,8 @@ function animateWhenVisible(canvas, frame) {
       }
       path.push({ x, y });
     }
-    caption.textContent = (isHeart ? "Draw something! The heart is just a placeholder. " : "") +
-      `Rebuilding with ${K} of ${N - 1} circles.`;
+    caption.textContent = `Rebuilding with ${K} of ${N - 1} circles. Dashed: the original. Solid: what the circles draw.` +
+      (isHeart ? " Draw your own shape in the box. The heart is just a placeholder." : "");
   }
   slider.addEventListener("input", rebuildPath);
 
@@ -301,19 +301,29 @@ function animateWhenVisible(canvas, frame) {
 
     tau = (tau + dt / LOOP_SECONDS) % 1;
 
-    // Your original line, faint.
-    ctx.strokeStyle = colors.line;
-    ctx.lineWidth = 2 * dpr;
+    // Your original line, as a dashed guide.
+    ctx.strokeStyle = colors.faint;
+    ctx.lineWidth = 1.5 * dpr;
+    ctx.setLineDash([3 * dpr, 5 * dpr]);
     ctx.beginPath();
     original.forEach((p, i) => i ? ctx.lineTo(p.x * S, p.y * S) : ctx.moveTo(p.x * S, p.y * S));
     ctx.closePath();
     ctx.stroke();
+    ctx.setLineDash([]);
 
-    // The trace so far this loop.
-    const upto = Math.floor(tau * 400);
+    // The whole shape these circles make, shown at once so slider changes are visible immediately.
     ctx.strokeStyle = colors.accent;
-    ctx.lineWidth = 2.5 * dpr;
     ctx.lineJoin = ctx.lineCap = "round";
+    ctx.globalAlpha = 0.3;
+    ctx.lineWidth = 2.5 * dpr;
+    ctx.beginPath();
+    path.forEach((p, i) => i ? ctx.lineTo(p.x * S, p.y * S) : ctx.moveTo(p.x * S, p.y * S));
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+
+    // The trace so far this loop, drawn boldly on top.
+    const upto = Math.floor(tau * 400);
+    ctx.lineWidth = 3 * dpr;
     ctx.beginPath();
     for (let i = 0; i <= upto; i++) i ? ctx.lineTo(path[i].x * S, path[i].y * S) : ctx.moveTo(path[0].x * S, path[0].y * S);
     ctx.stroke();
