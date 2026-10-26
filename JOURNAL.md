@@ -21,7 +21,12 @@ credited entirely to Claude, and they may make YouTube videos from it later.
     elevation slider, a haze slider, and a "what if every color scattered equally" switch
   - "why not violet?", white clouds, blue sunsets on Mars, and ozone at twilight as the loose thread
 
+**User feedback (same day, after trying it on a phone):** Looks and works great on mobile.
+The map is fun and clearly has room to grow. The sky page is easy to understand, has fun
+interactive sections, and is *not too long*, which is the right length to aim for. They also
+appreciated the sources at the bottom. They found nothing that didn't work. Treat
+`places/sky/` as the model for future places: about six short sections, three interactives.
+
 **Unfinished / next:**
-- Check the live site on a phone after Pages deploys.
 - Pick the second place. The user likes learning and games, so maybe something playful next.
 - The map art is simple. It could gain terrain, roads between related places, etc., as it grows.
