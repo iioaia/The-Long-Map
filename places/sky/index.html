@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Why the Sky Is Blue · The Long Map</title>
+<meta name="description" content="Why is the sky blue and the sunset red? An interactive explanation with a real sky simulator. Made by Claude.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/style.css">
+<style>
+  h1 { font-size: clamp(34px, 7vw, 52px); margin: 8px 0 12px; }
+  h2 { font-size: 28px; margin-top: 56px; }
+  .spectrum {
+    height: 28px; border-radius: 6px; margin: 12px 0 4px;
+    background: linear-gradient(90deg, #6a00a8 0%, #3b00ff 10%, #0044ff 20%, #00a9ff 33%,
+      #00ff8c 45%, #a8ff00 58%, #ffe100 67%, #ff8a00 80%, #ff1e00 92%, #c80000 100%);
+  }
+  .spectrum-scale { display: flex; justify-content: space-between; font-size: 13px; color: var(--ink-soft); }
+  #swatch, .swatch-lg { width: 44px; height: 44px; border-radius: 8px; border: 1px solid var(--line); flex: none; }
+  .wl-row { display: flex; gap: 14px; align-items: center; margin-top: 12px; }
+  .big { font-family: var(--serif); font-size: 22px; }
+  #skyCanvas { aspect-ratio: 2 / 1; background: #000; }
+  #barCanvas { aspect-ratio: 5 / 2; }
+  .switch { display: flex; gap: 10px; align-items: center; font-size: 15px; margin-top: 4px; }
+  .sun-swatch { display: inline-block; width: 14px; height: 14px; border-radius: 50%;
+    vertical-align: -2px; border: 1px solid var(--line); }
+  .caption { font-size: 14px; color: var(--ink-soft); margin-top: 8px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav class="crumb"><a href="../../">← The Long Map</a></nav>
+
+  <header>
+    <p class="kicker" style="margin-top:28px">Lighthouse Point</p>
+    <h1>Why is the sky blue, and the sunset red?</h1>
+    <p class="lede">Both have the same cause. Once you see it, you can't unsee it.</p>
+  </header>
+
+  <p>Look up on a clear day and the whole sky glows blue. But space is black, and the sun is
+  white-ish. So where does all that blue come from, and why does it turn orange and red when the sun
+  goes down?</p>
+
+  <p>A common guess is that the sky reflects the ocean. It doesn't. The sky is just as blue over
+  deserts. The real answer is stranger and nicer: <strong>the air itself is glowing with light
+  it has knocked sideways.</strong></p>
+
+  <!-- 1 -->
+  <h2>1. Sunlight is every color at once</h2>
+  <p>Sunlight looks white, but it's a mix of all the colors of the rainbow. Isaac Newton showed this
+  with a prism in the 1660s. Each color is light with a different <em>wavelength</em>, meaning the
+  distance between the crests of the wave. Violet and blue have short waves. Red has long ones.</p>
+
+  <div class="spectrum" role="img" aria-label="The visible spectrum from violet to red"></div>
+  <div class="spectrum-scale"><span>380 nm · violet</span><span>550 nm · green</span><span>700 nm · red</span></div>
+  <p class="caption">A nanometer (nm) is a billionth of a meter. Visible light spans roughly 380 to 700 nm.</p>
+
+  <!-- 2 -->
+  <h2>2. Air knocks short waves sideways</h2>
+  <p>Air is mostly nitrogen and oxygen molecules, and they're tiny: about a thousand times smaller
+  than a wavelength of light. When a light wave passes over a molecule, its electric field shakes
+  the molecule's electrons back and forth. A shaking charge gives off light of its own, sending
+  some of the wave off in a new direction. This is called <strong>scattering</strong>.</p>
+
+  <p>Here's the key fact. Faster shaking radiates far more strongly, and short waves shake
+  electrons faster. Work it through and the strength of scattering goes as
+  <strong>1 / wavelength⁴</strong>. Halve the wavelength and you get <em>sixteen times</em> as
+  much scattering. Lord Rayleigh worked this out in 1871, so it's called <em>Rayleigh scattering</em>.</p>
+
+  <div class="card">
+    <div class="wl-row">
+      <div id="swatch"></div>
+      <div>
+        <div class="big" id="wlFactor">—</div>
+        <div class="caption" style="margin:0">as much scattering as red light (700 nm)</div>
+      </div>
+    </div>
+    <div class="controls">
+      <label>Wavelength
+        <input type="range" id="wl" min="380" max="700" step="1" value="450">
+        <output id="wlOut">450 nm</output>
+      </label>
+    </div>
+  </div>
+
+  <p>So blue light gets scattered all over the sky, much more than red does. Wherever you look,
+  some of that scattered blue light is heading toward your eye. <strong>The blue sky is sunlight
+  that bounced off air.</strong></p>
+
+  <!-- 3 -->
+  <h2>3. Make your own sky</h2>
+  <p>This is a real (simplified) physics simulation of Earth's atmosphere. It traces light from
+  the sun through miles of air, scatters it off molecules and dust, and works out what reaches
+  your eye. You're standing on the ground, looking toward the sun.</p>
+
+  <div class="card">
+    <canvas id="skyCanvas" aria-label="Simulated sky looking toward the sun"></canvas>
+    <div class="controls">
+      <label>Sun height
+        <input type="range" id="sunEl" min="-3" max="70" step="0.25" value="35">
+        <output id="sunElOut">35°</output>
+      </label>
+      <label>Dust &amp; haze
+        <input type="range" id="haze" min="0" max="100" step="1" value="6">
+        <output id="hazeOut">6%</output>
+      </label>
+    </div>
+    <label class="switch"><input type="checkbox" id="equal"> What if air scattered every color equally?</label>
+    <div class="readout" id="skyReadout"></div>
+  </div>
+
+  <p><strong>Try this:</strong> drag the sun down to the horizon. At sunset, sunlight
+  skims sideways through the atmosphere, crossing almost <strong>40 times</strong> as much air
+  as at noon. Along the way, nearly all the blue gets scattered off in other directions before
+  it reaches you. What's left is orange and red, so that's the color of the sun and the clouds
+  it lights. <em>The blue sky and the red sunset are the same effect, seen from different angles.</em></p>
+
+  <p>Then tick the box to make air scatter every color equally. The sky goes white-gray. That's
+  the proof: the blue comes entirely from that 1/λ⁴ preference for short waves.</p>
+
+  <!-- 4 -->
+  <h2>4. Then why isn't the sky violet?</h2>
+  <p>Violet has an even shorter wavelength than blue, so it scatters even more. Shouldn't the sky
+  be purple? Two things push back against violet. Step through them:</p>
+
+  <div class="card">
+    <canvas id="barCanvas" aria-label="Bar chart of scattered light across the spectrum"></canvas>
+    <div class="btn-row" role="group" aria-label="Which effect to include">
+      <button class="chip" data-mode="0" aria-pressed="true">Scattering alone</button>
+      <button class="chip" data-mode="1" aria-pressed="false">× real sunlight</button>
+      <button class="chip" data-mode="2" aria-pressed="false">× your eyes</button>
+    </div>
+    <p class="caption" id="barCaption"></p>
+    <div class="wl-row">
+      <div id="mixSwatch" class="swatch-lg"></div>
+      <div class="caption" style="margin:0">All of these wavelengths mixed together, as your eyes
+        would see them. Computed from the light shown above using the standard CIE model of human
+        color vision.</div>
+    </div>
+  </div>
+
+  <p>The skylight really does contain more violet than blue. But sunlight has less violet in it to
+  begin with, and our eyes are much less sensitive at the violet end. The sky isn't one wavelength.
+  It's a blend of every color, tilted toward the short end, and that blend is what our eyes read
+  as pale "sky blue".</p>
+
+  <!-- 5 -->
+  <h2>5. Clouds, haze, and Mars</h2>
+  <p><strong>Clouds are white</strong> because water droplets are thousands of times bigger than air
+  molecules. Particles that big scatter all colors about equally. (This is called <em>Mie
+  scattering</em>.) Turn up the "dust &amp; haze" slider above and watch the sky fade toward white.
+  It's the same reason a smoggy or humid sky looks pale.</p>
+
+  <p><strong>On Mars, it's backwards.</strong> Mars's air is thin, but it's full of fine reddish
+  dust. By day the dust tints the sky a butterscotch color. At sunset, though, the dust scatters
+  blue light forward, close around the sun, so Martian sunsets have a cool blue glow. NASA's
+  Curiosity rover has photographed them.</p>
+
+  <!-- 6 -->
+  <h2>A loose thread</h2>
+  <p class="note">Here's a twist. After the sun sets, the sky overhead stays a deep blue, but
+  Rayleigh scattering alone can't fully explain that. By then the light overhead has crossed
+  so much air that scattering alone would leave it grayish or yellowish. In 1953 E. O. Hulburt
+  showed the missing piece is <strong>ozone</strong>, which absorbs some orange and red light
+  (its Chappuis bands). At twilight, the ozone layer quietly paints the sky blue. Even the
+  simple answer to "why is the sky blue" turns out to have a hidden chapter.</p>
+  <p class="note">You can see this gap in the simulator above. It has no ozone, so when you drag the
+  sun below the horizon, the sky overhead fades to gray instead of deep blue. The model is
+  missing a piece of the real world, and now you know which one.</p>
+
+  <h2>What's simplified here</h2>
+  <ul>
+    <li>The simulator tracks just three colors (red, green, blue) instead of the whole spectrum.</li>
+    <li>It counts light scattered once on its way to you, not light that bounces several times.
+      Real skies near the horizon are a bit brighter than shown.</li>
+    <li>It leaves out ozone, clouds, and the shadow of the Earth, and the sun's brightness is
+      fixed, with no eye adjusting to the dark the way yours does at dusk.</li>
+    <li>The bar chart treats sunlight as a 5,778 K blackbody, which is a good approximation of the
+      real solar spectrum but misses its fine detail. Eye response uses an analytic fit to the CIE 1931
+      color-matching functions (Wyman, Sloan &amp; Shirley, 2013).</li>
+  </ul>
+
+  <h2>Sources &amp; further reading</h2>
+  <ol class="sources">
+    <li>Lord Rayleigh (J. W. Strutt), "On the light from the sky, its polarization and colour,"
+      <em>Philosophical Magazine</em> 41 (1871).</li>
+    <li>G. S. Smith, "Human color vision and the unsaturated blue color of the daytime sky,"
+      <em>American Journal of Physics</em> 73, 590 (2005).</li>
+    <li>E. O. Hulburt, "Explanation of the brightness and color of the sky, particularly the twilight sky,"
+      <em>Journal of the Optical Society of America</em> 43, 113 (1953).</li>
+    <li>T. Nishita et al., "Display of the Earth taking into account atmospheric scattering,"
+      <em>SIGGRAPH</em> (1993). The approach the simulator is based on.</li>
+    <li>F. Kasten and A. T. Young, "Revised optical air mass tables and approximation formula,"
+      <em>Applied Optics</em> 28, 4735 (1989). Used for the "how much air" readout.</li>
+    <li>C. F. Bohren, <em>Clouds in a Glass of Beer</em> (1987). A delightful book on everyday atmospheric physics.</li>
+    <li>NASA/JPL, Curiosity rover images of sunset at Gale Crater, Mars (2015).</li>
+  </ol>
+
+  <footer class="site">
+    Made by <strong>Claude</strong>, an AI by <a href="https://www.anthropic.com">Anthropic</a>,
+    for <a href="../../">The Long Map</a>. Found a mistake?
+    <a href="https://github.com/iioaia/The-Long-Map/issues/new?title=Sky%3A%20">Report it here</a>.
+    Text CC&nbsp;BY&nbsp;4.0 · Code MIT.
+  </footer>
+</div>
+<script src="sky.js"></script>
+</body>
+</html>
