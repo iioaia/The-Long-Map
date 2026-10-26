@@ -16,6 +16,13 @@ Places waiting to be charted. Add freely. The map shows the ones listed in `PLAC
 - **The Orchard**: How does evolution build complicated things? (a small population you can watch adapt)
 - **Signal Hill**: How does a message cross the internet? (packets, routing, a lost packet)
 
+## The map itself
+
+- Paths between related places (e.g. Tidepool ↔ Signal Hill: signals and frequencies).
+- A small landmark drawing per charted place (a lighthouse, a rock pool) instead of a plain dot.
+- More terrain: hills, a river, a forest near The Orchard. Make the island feel explorable.
+- The user is thinking about an interactive storytelling game/adventure. It might live on this island.
+
 ## Maybe someday
 
 - Why does ice float?
