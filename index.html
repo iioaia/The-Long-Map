@@ -25,6 +25,10 @@
   #map .wave { stroke: var(--sea); stroke-width: 1.2; fill: none; opacity: 0.35; }
   #map .label { font-family: var(--serif); fill: var(--ink); font-size: 22px; }
   #map .q { font-family: var(--sans); fill: var(--ink-soft); font-size: 14px; }
+  /* A halo in the land color keeps labels readable where they cross the coastline. */
+  #map .place .label, #map .place .q {
+    stroke: var(--land); stroke-width: 5px; stroke-linejoin: round; paint-order: stroke;
+  }
   #map .uncharted .label { fill: var(--ink-faint); font-style: italic; font-size: 19px; }
   #map .place { cursor: default; }
   #map a .place { cursor: pointer; }
@@ -111,8 +115,8 @@ const PLACES = [
   { id: "tidepool", name: "Tidepool",         q: "What is a Fourier transform?",   x: 230, y: 400, charted: true, href: "places/tidepool/" },
   { id: "bridge",   name: "The Bridge",       q: "Why don't bridges fall down?",   x: 520, y: 470 },
   { id: "ember",    name: "Ember Hollow",     q: "What is entropy, really?",       x: 500, y: 300 },
-  { id: "orchard",  name: "The Orchard",      q: "How does evolution build?",      x: 640, y: 180 },
-  { id: "signal",   name: "Signal Hill",      q: "How does a message cross the internet?", x: 690, y: 410 },
+  { id: "orchard",  name: "The Orchard",      q: "How does evolution build?",      x: 560, y: 200 },
+  { id: "signal",   name: "Signal Hill",      q: "How does a message cross the internet?", x: 650, y: 400 },
 ];
 
 const svgNS = "http://www.w3.org/2000/svg";
